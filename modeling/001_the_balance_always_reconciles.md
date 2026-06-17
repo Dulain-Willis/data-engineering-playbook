@@ -191,6 +191,8 @@ Balance maintained as an UPDATEable column on loans.
 ---
 # Common Follow-Up Questions
 
+<br>
+
 ## How do you handle a refinance where an old loan is closed and a new one is opened?
 Tests whether the candidate models refinance as a status transition plus a parent_loan_id link.
 
