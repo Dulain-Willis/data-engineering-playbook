@@ -13,6 +13,8 @@ We're a consumer lending company offering personal loans, auto loans, and mortga
 # Schema
 ================================================================================
 
+<br>
+
 ```text
 loan_types
     loan_type_id INT PK 
@@ -45,10 +47,14 @@ loan_scheduled_payments
     due_date DATE 
 ```
 
+<br>
+<br>
 
 ================================================================================
 # SQL Queries
 ================================================================================
+
+<br>
 
 ## Query: A given loan's outstanding balance
 ```SQL
@@ -79,6 +85,8 @@ left join payments
 
 where loans.status = 'active'
 ```
+
+<br>
 
 ## Query: Delinquent accounts
 ```SQL
@@ -130,10 +138,14 @@ where loans.status = 'active'
     and coalesce(payments.total_paid, 0) < expected_payments.total_expected_due
 ```
 
+<br>
+<br>
 
 ================================================================================
 # Notes 
 ================================================================================
+
+<br>
 
 This is a normalization puzzle dressed up as a lending system. The real skill being probed: can you tell which numbers are facts you store and which are answers you compute? The trap is outstanding balance. It looks like a column you keep on the loan, so candidates store it and try to keep it in sync. Cache it and the first missed update silently drifts the stored number away from the ledger, and now no two reports agree. Derive it from the transaction log and it can never be wrong.
 
