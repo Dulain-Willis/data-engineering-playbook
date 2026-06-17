@@ -74,6 +74,8 @@ left join payments
 where loans.status = 'active'
 ```
 
+<br>
+
 ## Query: Delinquent accounts
 ```SQL
 with
