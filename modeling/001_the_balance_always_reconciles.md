@@ -316,7 +316,7 @@ Note: This is Postgres syntax, where you can't partition an existing table in pl
 <br>
 
 ## What changes if a payment applies partially to interest and partially to principal?
-Tests whether transaction_type is fine-grained enough to decompose.
+<sub>Tests whether transaction_type is fine-grained enough to decompose.</sub>
 
 **ANSWER:** Right now every payment is just logged as one row where the transaction_type field says 'payment.' But when someone makes a loan payment, part of that money goes toward the interest the bank charged them, and part actually pays down what they owe. Those are two different things — the bank cares about tracking them separately. The good news is the schema already handles this without any changes. Instead of logging one row where transaction_type says 'payment' for $1,000, you log two rows — one where transaction_type says 'principal_payment' for $700 and one where it says 'interest_payment' for $300. Now when you want the outstanding balance, you just sum up the rows where transaction_type is 'principal_payment'. When the finance team wants to know how much interest income came in, they sum up the 'interest_payment' rows. Same table, same structure, you're just being more specific with the values in the transaction_type field.
 
