@@ -9,6 +9,7 @@ We're a consumer lending company offering personal loans, auto loans, and mortga
 # Schema
 ================================================================================
 
+```text
 loan_types
     loan_type_id INT PK 
     loan_type_name VARCHAR
@@ -38,7 +39,7 @@ loan_scheduled_payments
     loan_id FK
     expected_amount DECIMAL
     due_date DATE 
-
+```
 
 ================================================================================
 # SQL Queries
