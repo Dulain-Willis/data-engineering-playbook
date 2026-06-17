@@ -1,14 +1,11 @@
-================================================================================
 # Question
-================================================================================
 
 We're a consumer lending company offering personal loans, auto loans, and mortgages, and each of those products carries its own standard interest rate and term length. A customer can hold several loans at once, and every payment lands as its own transaction against a loan. Design a schema that lets the operations team read each loan's outstanding balance from those payments and the risk team flag delinquent accounts.
 
 <br>
 
-================================================================================
+---
 # Schema
-================================================================================
 
 ```text
 loan_types
@@ -44,9 +41,8 @@ loan_scheduled_payments
 
 <br>
 
-================================================================================
+---
 # SQL Queries
-================================================================================
 
 ## Query: A given loan's outstanding balance
 ```SQL
@@ -181,6 +177,7 @@ Balance maintained as an UPDATEable column on loans.
 - Silent drift on missed updates
 - Reconciliation jobs become mandatory
 
+<br>
 
 ================================================================================
 # Common Follow-Up Questions
