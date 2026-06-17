@@ -2,18 +2,13 @@
 # Question
 ================================================================================
 
-<br>
-
 We're a consumer lending company offering personal loans, auto loans, and mortgages, and each of those products carries its own standard interest rate and term length. A customer can hold several loans at once, and every payment lands as its own transaction against a loan. Design a schema that lets the operations team read each loan's outstanding balance from those payments and the risk team flag delinquent accounts.
 
-<br>
 <br>
 
 ================================================================================
 # Schema
 ================================================================================
-
-<br>
 
 ```text
 loan_types
@@ -48,13 +43,10 @@ loan_scheduled_payments
 ```
 
 <br>
-<br>
 
 ================================================================================
 # SQL Queries
 ================================================================================
-
-<br>
 
 ## Query: A given loan's outstanding balance
 ```SQL
@@ -85,8 +77,6 @@ left join payments
 
 where loans.status = 'active'
 ```
-
-<br>
 
 ## Query: Delinquent accounts
 ```SQL
@@ -139,13 +129,10 @@ where loans.status = 'active'
 ```
 
 <br>
-<br>
 
 ================================================================================
 # Notes 
 ================================================================================
-
-<br>
 
 This is a normalization puzzle dressed up as a lending system. The real skill being probed: can you tell which numbers are facts you store and which are answers you compute? The trap is outstanding balance. It looks like a column you keep on the loan, so candidates store it and try to keep it in sync. Cache it and the first missed update silently drifts the stored number away from the ledger, and now no two reports agree. Derive it from the transaction log and it can never be wrong.
 
