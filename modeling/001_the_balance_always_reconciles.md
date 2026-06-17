@@ -126,11 +126,12 @@ where loans.status = 'active'
 
 <br>
 
-================================================================================
+---
 # Notes 
-================================================================================
 
 This is a normalization puzzle dressed up as a lending system. The real skill being probed: can you tell which numbers are facts you store and which are answers you compute? The trap is outstanding balance. It looks like a column you keep on the loan, so candidates store it and try to keep it in sync. Cache it and the first missed update silently drifts the stored number away from the ledger, and now no two reports agree. Derive it from the transaction log and it can never be wrong.
+
+<br>
 
 ## Trick to Solving
 When a prompt lists several "types" of something (personal, auto, mortgage) with their own rates and terms, the trick is to lift those attributes into a dimension. Before drawing tables, a strong candidate asks: is outstanding balance a stored column or a derived aggregate?
@@ -139,6 +140,8 @@ When a prompt lists several "types" of something (personal, auto, mortgage) with
 - Keep loans as the instance fact of a customer taking a loan
 - Model every payment as a row in loan_transactions
 - Derive outstanding balance via SUM, never store it
+
+<br>
 
 ## Break down the requirements
 1. Identify the four entities 
@@ -153,6 +156,8 @@ One row equals one money movement on one loan: payment, disbursement, fee, or re
 4. Compute outstanding balance
 principal_amount - SUM(paid_amount) via a GROUP BY on loan_id. The aggregate is always in sync because the underlying fact is the ledger.
 
+<br>
+
 ## Why this works
 Deriving balance from a ledger is the accounting-grade pattern. Storing balance as a column looks efficient until the first missed update creates drift, at which point reconciliation is a nightmare. A SUM over a properly indexed fact is both correct and fast enough.
 
@@ -161,6 +166,8 @@ A strong candidate says "the balance is a derived view" out loud and pushes back
 
 ### Common pitfall
 Storing outstanding_balance as a column on loans and keeping it in sync via triggers. The first replication lag or missed trigger creates a silent drift between the ledger and the balance, which is exactly the failure the ledger model exists to prevent.
+
+<br>
 
 ## Trade-offs and alternatives
 
@@ -179,9 +186,8 @@ Balance maintained as an UPDATEable column on loans.
 
 <br>
 
-================================================================================
+---
 # Common Follow-Up Questions
-================================================================================
 
 ## How do you handle a refinance where an old loan is closed and a new one is opened?
 Tests whether the candidate models refinance as a status transition plus a parent_loan_id link.
@@ -195,7 +201,8 @@ ANSWER: You wouldn't just go in and update the old loan's fields to reflect the 
 | 205     | 55          | 101            | 22000.00         | active      | 2024-06-01 | NULL       |
 
 
----
+<br>
+
 ## How do you compute days past due for each loan?
 Tests whether the candidate derives it from expected payment schedule vs actual transactions.
 
@@ -266,8 +273,8 @@ inner join loans
 where loans.status = 'active'
 ```
 
+<br>
 
----
 ## How would you partition loan_transactions if volume reached 500M rows?
 Tests scale thinking: date partitioning and clustering by loan_id.
 
@@ -302,8 +309,8 @@ ALTER TABLE loan_transactions_partitioned RENAME TO loan_transactions;
 
 Note: This is Postgres syntax, where you can't partition an existing table in place — you have to create a new partitioned table, migrate the data, and swap. In cloud warehouses like Snowflake, BigQuery, or Redshift, partitioning is handled for you automatically — you just declare it at table creation and never think about it again.
 
+<br>
 
----
 ## What changes if a payment applies partially to interest and partially to principal?
 Tests whether transaction_type is fine-grained enough to decompose.
 
