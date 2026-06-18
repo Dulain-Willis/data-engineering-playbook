@@ -196,6 +196,8 @@ Balance maintained as an UPDATEable column on loans.
 ## How do you handle a refinance where an old loan is closed and a new one is opened?
 > Tests whether the candidate models refinance as a status transition plus a parent_loan_id link.
 
+<br>
+
 **ANSWER:** You wouldn't just go in and update the old loan's fields to reflect the new terms — that destroys the history of what the borrower originally agreed to. Instead, you keep the old loan as-is and just flip its status to something like 'refinanced'. Then you create a brand new loan row with the new terms and add a field like parent_loan_id that points back to the old loan. That way you've got a clean link between the two — you can always trace back and see what the original loan looked like. You could also throw in opened_at and closed_at timestamps on the loans table so you know exactly when each one started and ended.
 
 
@@ -209,6 +211,8 @@ Balance maintained as an UPDATEable column on loans.
 
 ## How do you compute days past due for each loan?
 > Tests whether the candidate derives it from expected payment schedule vs actual transactions.
+
+<br>
 
 **ANSWER:** Payments aren't tied one-to-one to specific installments — a borrower might pay a lump sum that covers multiple months, or underpay and fall behind gradually. So you can't just look at one missed payment. Instead, you line up the scheduled payments in order by due date and build a running total of what should have been paid by each date. Then you compare that running total against the actual total the borrower has paid. The first scheduled payment where the running expected amount exceeds what's been paid is where the borrower fell behind. You take that due date and subtract it from today to get days past due. In production you'd probably materialize this as a daily snapshot table for performance, but the source of truth is always this derived calculation.
 
@@ -282,6 +286,8 @@ where loans.status = 'active'
 ## How would you partition loan_transactions if volume reached 500M rows?
 > Tests scale thinking: date partitioning and clustering by loan_id.
 
+<br>
+
 **ANSWER**: When you've got 500 million rows in a transactions table, you don't want the database scanning everything every time someone asks a question. So you partition the table by date — basically splitting it into smaller chunks, like one per month, based on when the payment came in. That way if someone queries for last month's data, the database only looks at that one chunk and ignores everything else. Then within each partition, you cluster by loan_id, which just means the rows for the same loan are physically stored next to each other on disk. So now when you ask "show me all payments for loan 101 in March," the database opens the March chunk, finds the loan 101 rows all sitting together, and you're done. You went from scanning half a billion rows to reading maybe a few hundred.
 
 ```SQL
@@ -317,6 +323,8 @@ ALTER TABLE loan_transactions_partitioned RENAME TO loan_transactions;
 
 ## What changes if a payment applies partially to interest and partially to principal?
 > Tests whether transaction_type is fine-grained enough to decompose.
+
+<br>
 
 **ANSWER:** Right now every payment is just logged as one row where the transaction_type field says 'payment.' But when someone makes a loan payment, part of that money goes toward the interest the bank charged them, and part actually pays down what they owe. Those are two different things — the bank cares about tracking them separately. The good news is the schema already handles this without any changes. Instead of logging one row where transaction_type says 'payment' for $1,000, you log two rows — one where transaction_type says 'principal_payment' for $700 and one where it says 'interest_payment' for $300. Now when you want the outstanding balance, you just sum up the rows where transaction_type is 'principal_payment'. When the finance team wants to know how much interest income came in, they sum up the 'interest_payment' rows. Same table, same structure, you're just being more specific with the values in the transaction_type field.
 
