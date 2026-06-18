@@ -2,11 +2,7 @@
 
 The FinOps team is investigating the top spending tiers and needs the 3rd highest cost amount on record. Multiple entries can share the same amount, so return the specific value that ranks third.
 
-<br>
-
---- 
-
-# Schema 
+## Schema
 
 ```text 
 cloud_costs 
