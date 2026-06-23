@@ -130,16 +130,6 @@ svc_name_ranked_by_avg_uptime as (
   group by svc_name
 
 )
-
-select
-  svc_name,
-  average_uptime
-
-from svc_name_ranked_by_avg_uptime
-
-where uptime_rank <= 10
-
-order by average_uptime asc
 ```
 
 <br>
@@ -178,16 +168,6 @@ svc_name_ranked_by_min_uptime as (
   group by svc_name
 
 )
-
-select
-  svc_name,
-  minimum_uptime
-
-from svc_name_ranked_by_min_uptime
-
-where uptime_rank <= 10
-
-order by minimum_uptime asc, svc_name asc
 ```
 
 <br>
