@@ -209,7 +209,10 @@ having (
 ) < 10
 
 order by minimum_uptime asc
+
 ```
+
+<br>
 
 The self-join version expresses the same logic differently — join each service against all services with a strictly lower min uptime, then use `HAVING` to keep only those with fewer than 10 such services below them.
 
